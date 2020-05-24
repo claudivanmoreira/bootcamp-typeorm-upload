@@ -28,28 +28,24 @@ class ImportTransactionsService {
 
     const categories = await this.resolveCategories(csvTransactions);
 
-    console.log('execute 1 => ', categories);
-
     const transactionRepository = getRepository(Transaction);
 
     const transactions = csvTransactions.map(csvItem => {
-      const { title, type, value } = csvItem;
-      // console.log(title);
-      console.log(categories.get(title));
-      // const transaction = transactionRepository.create({
-      //   title,
-      //   value,
-      //   type,
-      //   category: categories.get(title),
-      //   category_id: categories.get(title)?.id,
-      // });
-      // return transaction;
-      return null;
+      const { title, type, value, category } = csvItem;
+      const transaction = transactionRepository.create({
+        title,
+        value,
+        type,
+        category: categories.get(category)
+      });
+      return transaction;
     });
 
-    // await transactionRepository.save(transactions);
+    await transactionRepository.save(transactions);
 
-    return []; // transactions;
+    transactions.forEach(item => delete item.category_id);
+
+    return  transactions;
   }
 
   private async parseCsvFile({ csvFileName }: Request): Promise<CsvRequest[]> {

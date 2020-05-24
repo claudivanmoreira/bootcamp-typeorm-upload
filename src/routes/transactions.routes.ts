@@ -53,11 +53,11 @@ transactionsRouter.post(
   async (request, response) => {
     const importTransactions = new ImportTransactionsService();
 
-    await importTransactions.execute({
+    const transactions = await importTransactions.execute({
       csvFileName: request.file.filename,
     });
 
-    return response.json({ ok: true });
+    return response.json({ transactions });
   },
 );
 
